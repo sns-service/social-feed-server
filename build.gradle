@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.google.cloud.tools.jib' version '3.4.0'
 }
 
 group = 'com.example'
@@ -25,4 +26,21 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jib {
+	from {
+		image = 'openjdk:21'
+	}
+	to {
+		image = '637423170275.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server'
+		tags = ['0.0.1']
+		auth {
+			username = 'AWS'
+			password = System.getenv('AWS_ECR_PASSWORD') ?: 'default_password' // 기본값으로 null 방지
+		}
+	}
+	container {
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+	}
 }
