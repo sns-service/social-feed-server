@@ -1,6 +1,7 @@
 package com.example.feedserver.feed.service;
 
 import com.example.feedserver.feed.dto.CreateFeedRequest;
+import com.example.feedserver.feed.dto.SocialFeedInfo;
 import com.example.feedserver.feed.repository.SocialFeedRepository;
 import com.example.feedserver.feed.entity.SocialFeed;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +16,17 @@ public class SocialFeedService {
 
     private final SocialFeedRepository feedRepository;
 
-    public List<SocialFeed> getAllFeeds() {
-        return feedRepository.findAll();
+    public List<SocialFeedInfo> getAllFeeds() {
+        return feedRepository.findAllFeedsInfo();
     }
 
-    public List<SocialFeed> getAllFeedsByUploaderId(int uploaderId) {
-        return feedRepository.findByUploaderId(uploaderId);
+    public List<SocialFeedInfo> getAllFeedsByUploaderId(int uploaderId) {
+        return feedRepository.findFeedsInfoByUploaderId(uploaderId);
     }
 
-    public SocialFeed getFeedById(int feedId) {
-        return feedRepository.findById(feedId).orElse(null);
+    public SocialFeedInfo getFeedById(int feedId) {
+        SocialFeed socialFeed = feedRepository.findById(feedId).orElse(null);
+        return convertToSocialFeedInfo(socialFeed);
     }
 
     public void deleteFeed(int feedId) {
@@ -32,9 +34,9 @@ public class SocialFeedService {
     }
 
     @Transactional
-    public SocialFeed createFeed(CreateFeedRequest feedRequest) {
+    public SocialFeedInfo createFeed(CreateFeedRequest feedRequest) {
         SocialFeed feed = convertToSocialFeed(feedRequest);
-        return feedRepository.save(feed);
+        return convertToSocialFeedInfo(feed);
     }
 
     private SocialFeed convertToSocialFeed(CreateFeedRequest feedRequest) {
@@ -42,6 +44,16 @@ public class SocialFeedService {
                 .imageId(feedRequest.getImageId())
                 .uploaderId(feedRequest.getUploaderId())
                 .contents(feedRequest.getContents())
+                .build();
+    }
+
+    private SocialFeedInfo convertToSocialFeedInfo(SocialFeed socialFeed) {
+        return SocialFeedInfo.builder()
+                .feedId(socialFeed.getFeedId())
+                .imageId(socialFeed.getImageId())
+                .uploaderId(socialFeed.getUploaderId())
+                .uploadDatetime(socialFeed.getUploadDatetime())
+                .contents(socialFeed.getContents())
                 .build();
     }
 }
