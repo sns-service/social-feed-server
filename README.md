@@ -8,7 +8,7 @@
 - 포스트를 올린 사람의 id, 포스트의 내용, 사진 id 를 처리한다.
 <br>
 
-## kubernetes 빌드 및 실행
+## kubernetes 빌드 및 배포 ✅
 - jib 을 통해 AWS ECR 에 이미지를 배포합니다.
 
 ![스크린샷 2024-05-18 오후 3 59 57](https://github.com/sns-service/social-feed-server/assets/56336436/156e0020-caff-4c23-98cd-503811d1c04e)
