@@ -36,6 +36,7 @@ public class SocialFeedService {
     @Transactional
     public SocialFeedInfo createFeed(CreateFeedRequest feedRequest) {
         SocialFeed feed = convertToSocialFeed(feedRequest);
+        feedRepository.save(feed);
         return convertToSocialFeedInfo(feed);
     }
 
