@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 @Getter
 @AllArgsConstructor
 @Builder
-public class SocialFeedInfo {
+public class FeedResponse {
 
     private int feedId;
     private String imageId;

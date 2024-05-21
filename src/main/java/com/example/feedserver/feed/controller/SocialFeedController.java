@@ -1,12 +1,16 @@
 package com.example.feedserver.feed.controller;
 
 import com.example.feedserver.feed.dto.CreateFeedRequest;
-import com.example.feedserver.feed.dto.SocialFeedInfo;
+import com.example.feedserver.feed.dto.FeedInfo;
+import com.example.feedserver.feed.dto.FeedResponse;
+import com.example.feedserver.feed.entity.SocialFeed;
 import com.example.feedserver.feed.service.SocialFeedService;
+import com.example.feedserver.userinfo.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,18 +21,28 @@ public class SocialFeedController {
     private final SocialFeedService feedService;
 
     @GetMapping
-    public List<SocialFeedInfo> getAllFeeds() {
-        return feedService.getAllFeeds();
+    public List<FeedInfo> getAllFeeds() {
+        List<SocialFeed> allFeeds = feedService.getAllFeeds();
+
+        // TODO : 성능 개선 & 리팩토링
+        List<FeedInfo> result = new ArrayList<>();
+        for (SocialFeed feed : allFeeds) {
+            UserInfo user = feedService.getUserInfo(feed.getUploaderId());
+            FeedInfo feedInfo = new FeedInfo(feed, user.getUsername());
+            result.add(feedInfo);
+        }
+
+        return result;
     }
 
     @GetMapping("/user/{userId}")
-    public List<SocialFeedInfo> getAllFeedsByUser(@PathVariable("userId") int userId) {
+    public List<FeedResponse> getAllFeedsByUser(@PathVariable("userId") int userId) {
         return feedService.getAllFeedsByUploaderId(userId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SocialFeedInfo> getFeedById(@PathVariable("id") int id) {
-        SocialFeedInfo result = feedService.getFeedById(id);
+    public ResponseEntity<FeedResponse> getFeedById(@PathVariable("id") int id) {
+        FeedResponse result = feedService.getFeedById(id);
 
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -43,7 +57,7 @@ public class SocialFeedController {
     }
 
     @PostMapping
-    public SocialFeedInfo createFeed(@RequestBody CreateFeedRequest feedRequest) {
+    public FeedResponse createFeed(@RequestBody CreateFeedRequest feedRequest) {
         return feedService.createFeed(feedRequest);
     }
 }
