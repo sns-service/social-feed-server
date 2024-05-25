@@ -9,3 +9,9 @@ spring:
     url: jdbc:mysql://localhost:3306/sns
     username: root
     password: 1235
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
