@@ -24,7 +24,6 @@ public class SocialFeedController {
     public List<FeedInfo> getAllFeeds() {
         List<SocialFeed> allFeeds = feedService.getAllFeeds();
 
-        // TODO : 성능 개선 & 리팩토링
         List<FeedInfo> result = new ArrayList<>();
         for (SocialFeed feed : allFeeds) {
             UserInfo user = feedService.getUserInfo(feed.getUploaderId());
@@ -33,6 +32,12 @@ public class SocialFeedController {
         }
 
         return result;
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<Void> refreshFeed() {
+        feedService.refreshAllFeeds();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{userId}")
