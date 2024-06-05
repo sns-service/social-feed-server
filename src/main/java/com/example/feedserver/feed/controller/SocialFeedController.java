@@ -1,11 +1,13 @@
 package com.example.feedserver.feed.controller;
 
+import com.example.feedserver.auth.AuthService;
 import com.example.feedserver.feed.dto.CreateFeedRequest;
 import com.example.feedserver.feed.dto.FeedInfo;
 import com.example.feedserver.feed.dto.FeedResponse;
 import com.example.feedserver.feed.entity.SocialFeed;
 import com.example.feedserver.feed.service.SocialFeedService;
 import com.example.feedserver.userinfo.UserInfo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +21,12 @@ import java.util.List;
 public class SocialFeedController {
 
     private final SocialFeedService feedService;
+    private final AuthService authService;
 
     @GetMapping
     public List<FeedInfo> getAllFeeds() {
         List<SocialFeed> allFeeds = feedService.getAllFeeds();
 
-        // TODO : 성능 개선 & 리팩토링
         List<FeedInfo> result = new ArrayList<>();
         for (SocialFeed feed : allFeeds) {
             UserInfo user = feedService.getUserInfo(feed.getUploaderId());
@@ -33,6 +35,18 @@ public class SocialFeedController {
         }
 
         return result;
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<Void> refreshFeed() {
+        feedService.refreshAllFeeds();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/deleteAll")
+    public ResponseEntity<Void> deleteAllFeeds() {
+        feedService.deleteAllFeeds();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/user/{userId}")
@@ -50,14 +64,16 @@ public class SocialFeedController {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFeed(@PathVariable("id") int id) {
-        feedService.deleteFeed(id);
-        return ResponseEntity.ok().build();
+    @PostMapping
+    public FeedResponse createFeed(@RequestBody CreateFeedRequest feedRequest, HttpServletRequest request) {
+        int userId = authService.getUserIdFromAuthServer(request);
+        return feedService.createFeed(feedRequest, userId);
     }
 
-    @PostMapping
-    public FeedResponse createFeed(@RequestBody CreateFeedRequest feedRequest) {
-        return feedService.createFeed(feedRequest);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFeed(@PathVariable("id") int id, HttpServletRequest request) {
+        int userId = authService.getUserIdFromAuthServer(request);
+        feedService.deleteFeed(id, userId);
+        return ResponseEntity.ok().build();
     }
 }
