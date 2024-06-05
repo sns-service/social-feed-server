@@ -25,6 +25,10 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+feed-deploy.yaml
+feed-service.yaml
+kafka-secret.yaml
+kafka-configmap.yaml
 
 ### NetBeans ###
 /nbproject/private/
