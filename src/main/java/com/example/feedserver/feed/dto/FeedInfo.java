@@ -3,11 +3,15 @@ package com.example.feedserver.feed.dto;
 import com.example.feedserver.feed.entity.SocialFeed;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.ZonedDateTime;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Setter
 public class FeedInfo {
 
     private int feedId;
